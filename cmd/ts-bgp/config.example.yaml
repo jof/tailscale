@@ -1,0 +1,40 @@
+# ts-bgp example configuration
+
+bgp:
+  # Local BGP AS number (required)
+  local_as: 65000
+  
+  # Router ID - must be a valid IPv4 address (required)
+  router_id: "10.0.0.1"
+  
+  # BGP listen port (default: 179)
+  listen_port: 179
+  
+  # BGP peers (always eBGP - use different AS than local_as)
+  peers:
+    - name: "upstream-router"
+      address: "10.0.0.254"
+      remote_as: 65001
+      description: "Core network router"
+      hold_time: 90
+      keepalive_time: 30
+      # MD5 authentication (optional but recommended)
+      md5_password: "secret123"
+
+tailscale:
+  # Path to tailscaled socket (optional, uses default)
+  # socket: "/var/run/tailscale/tailscaled.sock"
+  
+  # Which routes to export to BGP:
+  # - "primary": only subnet routes where this node is the primary router
+  # - "all": all AllowedIPs from all peers (use with caution)
+  export_mode: "primary"
+  
+  # Allow importing routes learned from BGP into tailnet
+  import_enabled: true
+  
+  # Disable source NAT for imported routes (required for transit)
+  no_snat: true
+  
+  # Disable stateful filtering for imported routes (required for transit)
+  no_stateful_filtering: true
